@@ -60,7 +60,7 @@ class cashBin:
         amount = input('CashBin> Please enter the amount of cash deposited: ')
         return int(amount)
     
-    def openCashBin(self):
+    def openCashBin(self): #when deposit is aborted, return the money.
         pass
 
 
@@ -120,7 +120,7 @@ class Account:
     
     def getBalance(self):
         if self.transactionState != enumTransactionState.IDLE:
-            return False
+            return -1
         return self.balance
     
     def setBalance(self, balance):
@@ -215,24 +215,24 @@ class Server: # a single bank server, multiple ATMs are connected to it. stands 
     def getBalance(self, cardNo, cardAuthKey, accountNo, pinCode):
         if not self.authCard(cardNo, cardAuthKey):
             #print('Card not authenticated.')
-            return False
+            return -1
         for i in self.accountSet:
             if i.getAccountNumber() == accountNo and i.getPinCode() == pinCode:
                 #print('Success')
                 return i.getBalance()
         #print('Account not found or pincode mismatches.')
-        return False
+        return -1
     
     def withdraw(self, cardNo, cardAuthKey, accountNo, pinCode, amount):
         if not self.authCard(cardNo, cardAuthKey):
-            return False
+            return -1
         for i in self.accountSet:
             if i.getAccountNumber() == accountNo and i.getPinCode() == pinCode:
                 if i.withdraw(amount): #if the transaction is successful
                     return i.getBalance()
                 else:
-                    return False
-        return False
+                    return -1
+        return -1
 
     def deposit(self, cardNo, cardAuthKey, accountNo,amount):
         if not self.authCard(cardNo, cardAuthKey):
@@ -282,7 +282,7 @@ class ATM: # a single ATM machine
         amount = int(amount)
         if self.cashBin.withdrawCheck(amount):
             balance = self.server.withdraw(self.cardReader.card.getCardNumber(), self.cardReader.card.getCardKey(), self.accountNo, int(pinCode), amount)
-            if balance:
+            if balance >= 0:
                 print('Balance: ' + str(balance) + '\n')
                 self.cashBin.withdrawCommit(amount)
                 print('Please collect your cash.\n')
