@@ -37,7 +37,6 @@ class cashBin:
         if(self.getBalance() < amount): #dispenser shorts on cash, reject the transaction
             return False
         else:
-            #self.balance -= amount
             return True
 
     def withdrawCommit(self, amount):
@@ -49,7 +48,6 @@ class cashBin:
         if(self.getBalance() + amount > self.maxCapacity): #dispenser overflows, reject the transaction
             return False
         else:
-            #self.balance += amount
             return True
         
     def depositCommit(self, amount):
@@ -70,7 +68,6 @@ class Card:
         self.pinCode = pinCode
         self.unsuccessfulAttempts = 0
         self.unlocked = False
-        #self.accountNumberSet = set()
         self.cardKey = cardAuthKey #this is to verify the card is authentic. This is a private key that is only known to the bank.
     
     def getCardNumber(self):
@@ -85,11 +82,9 @@ class Card:
     
     def verifyPin(self, pinCode):
         self.unlocked = False
-        #print('enterd: ' + str(pinCode) + ' expected: ' + str(self.pinCode))
         if int(self.pinCode) == int(pinCode):
             self.unsuccessfulAttempts = 0
             self.unlocked = True
-            #print('unlocked')
             return True
         else:
             self.unsuccessfulAttempts += 1
@@ -159,11 +154,6 @@ class ServerCardData:
 
 class Server: # a single bank server, multiple ATMs are connected to it. stands for a single bank.
 
-    # class cardAuthKey:
-    #     def __init__(self, cardNumber, cardAuthKey):
-    #         self.cardNumber = cardNumber
-    #         self.cardAuthKey = cardAuthKey
-
     def __init__(self, bankName):
         self.bankName = bankName
         self.accountSet = set()
@@ -214,13 +204,10 @@ class Server: # a single bank server, multiple ATMs are connected to it. stands 
 
     def getBalance(self, cardNo, cardAuthKey, accountNo, pinCode):
         if not self.authCard(cardNo, cardAuthKey):
-            #print('Card not authenticated.')
             return -1
         for i in self.accountSet:
             if i.getAccountNumber() == accountNo and i.getPinCode() == pinCode:
-                #print('Success')
                 return i.getBalance()
-        #print('Account not found or pincode mismatches.')
         return -1
     
     def withdraw(self, cardNo, cardAuthKey, accountNo, pinCode, amount):
@@ -247,11 +234,7 @@ class ATM: # a single ATM machine
         self.cardReader = CardReader() #a physical card reader
         self.cashBin = cashBin(10000, 100000) #initial balance of $10K, max capacity of $100K
         self.server = server #reference to its bank server
-        #self.card = None #reference to the card inserted
         self.accountNo = None #reference to the account selected
-    
-    #def insertCard(self, cardObj): # to be integrated with a physical card reader
-        #self.card = cardObj
     
     def inquireAccountList(self): #Error checks are honestly abundant, as the control flow of the caller prevents any errors from happening.
         if not self.cardReader.hasCard:
@@ -336,7 +319,7 @@ class ATM: # a single ATM machine
     def mainMenu(self):
         print('Welcome to ' + self.server.getBankName() + ' ATM')
         print('Please insert your card to begin.')
-        #Test Code~
+        #Test Code~ Substitute with a physical card reader later
         print('-- Since this is a test program, a mockup card will be inserted after 3 seconds. --\n')
         time.sleep(3)
         self.cardReader.insertCard(testCard)
@@ -404,9 +387,9 @@ class ATM: # a single ATM machine
         while True:
             self.mainMenu()
 
-testServer = Server('bearBank')
+testServer = Server('bearBank') #create a server
 testCard = testServer.issueCard(123456789, cardAuthKey, 1234) #CardNo, CardKey, PIN
-testAccount = testServer.openAccount(123456789, 0, 1234)
+testAccount = testServer.openAccount(123456789, 0, 1234) #accountNo, Balance, PIN
 testServer.addCardToAccount(123456789, 123456789) #CardNo, AccountNo
-testATM = ATM(testServer)
+testATM = ATM(testServer) #boot up ATM
 testATM.loop()
