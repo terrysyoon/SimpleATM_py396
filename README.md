@@ -311,3 +311,33 @@ Models a physical cash window and storage.
 
 - balance: The amount of cash in the storage currently.
 - maxCapacity: The amount of cash the storage may hold at maximum.
+
+**ServerCardData**
+
+```python
+class ServerCardData:
+    def __init__(self, cardNumber, cardAuthKey):
+        self.cardNumber = cardNumber
+        self.cardAuthKey = cardAuthKey
+        self.accountNumberSet = set()
+```
+
+The bank server manages three informations to manage a valid ATM card. One object of this class stands for one valid ATM card.
+
+- cardNumber: The cardnumber that is printed on the ATM card.
+- cardAuthKey: The authentication code stored in the secure element of an ATM card. The server checks this key to authenticate that the ATM card is legitimate.
+- accountNumberSet: The set of account numbers which this ATM card is granted for access.
+
+**Server**
+
+This class mimics a simple bank server.
+
+Support various features like opening an account, issuing an ATM card and lining an account, but I am saving detailed comment since the methods are pretty straight forward to read and the main topic of this project does not reside on modeling a server but an ATM machine.
+
+**Account**
+
+This class mimics a checking account.
+
+Primitive transactions are implemented as methods of this class.
+
+I am saving detailed comment since the methods are pretty straight forward to read and the main topic of this project does not reside on modeling an account but an ATM machine.
